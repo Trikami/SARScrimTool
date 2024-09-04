@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SAR Scrim Tool</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .rs-buttons button.btn {
+            max-width: 11%;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm bg-body-tertiary">
+    <div class="container-fluid" id="top">
+        <a class="navbar-brand" href="#">
+            <img src="img/logo.png" alt="Logo" width="24" height="24" class="d-inline-block align-text-top">
+            Scrim Tool
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"  >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#top" onclick="showPage('settings');" data-pagelink="settings">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#top" onclick="showPage('results');" data-pagelink="results">Results</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#top" onclick="showPage('table');" data-pagelink="table">Table</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#top" onclick="showPage('about');" data-pagelink="about">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid active-page" id="settings">
+    <h2 class="mt-2">General Settings</h2>
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <p class="mb-1">The number of rounds for the Scrim. Decreasing this will delete all data associated with any removed round.</p>
+            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text">Max rounds</span>
+                <input id="max-rounds" type="number" step="1" class="form-control" placeholder="Max rounds" min="1" max="100" value="1">
+                <button id="btn-apply-mr" class="btn btn-outline-secondary text-light">Apply</button>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <p class="mb-1">The number of top placements for the Scrim. Decreasing this will delete all points data associated with any removed placement.</p>
+            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text">Number of top placements</span>
+                <input id="top-placements" type="number" step="1" class="form-control" placeholder="Number of top placements" min="1" max="64" value="1">
+                <button id="btn-apply-mp" class="btn btn-outline-secondary text-light">Apply</button>
+            </div>
+        </div>
+    </div>
+    <h2 class="mt-2">Points for top placements</h2>
+    <div class="row" id="top-settings"></div>
+    <h2>Points for survival time</h2>
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                &#x1F6C8; This only works if the output of <code>/score</code> is provided.
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text">Per X sec survived</span>
+                <input id="survival-bonus" type="number" step=".1" class="form-control" placeholder="Per X sec survived" min="0">
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text">Award interval in sec</span>
+                <input id="survival-interval" type="number" class="form-control" placeholder="Award interval" min="1">
+            </div>
+        </div>
+    </div>
+    <h2>Points for kills</h2>
+    <div class="row">
+        <div class="col-6">
+            <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text">Points per Kill</span>
+                <input id="per-kill" type="number" step=".1" class="form-control" placeholder="Per X sec survived" min="0">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid d-none" id="results">
+    <h2 class="mt-1">Match result input</h2>
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                &#x26A0; If you only provide the output of <code>/score</code> player results will be combined by name, this might result in unexpected behaviour if two players use the same name. It also makes it impossible to filter out any Bot players, if there were any in the games.
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-sm-1 row-cols-md-2" id="round-buttons">
+    </div>
+</div>
+
+
+<div class="container-fluid d-none" id="table">
+    <h2 class="mt-1">Table</h2>
+    <div class="row">
+        <div id="result-table" class="col">
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid d-none" id="about">
+    <h2 class="mt-1">About</h2>
+    <div class="row">
+        <div class="col">
+            <p>This is a web based tool, to automatically parse and process results of <a href="https://animalroyale.com/" target="_blank">Super Animal Royale</a> tournaments, usually called Scrims. This tool was written by me (Trikami) (<a href="https://github.com/Trikami">GitHub</a>, <a href="https://x.com/TrikamiJolteon">Twitter</a>, <a href="https://twitch.tv/trikamijolteon">Twitch</a>) wanting to do more Scrims in SAR, but I was too lazy to punch these numbers into Excel by hand every time.</p>
+            <p>The project is open to contributions on <a href="https://github.com/Trikami/SARScrimTool">GitHub</a>.</p>
+
+            <h3 class="mt-1">Legal notice</h3>
+            <p>The SAR Scrim Tool is a fan project for Super Animal Royale and not affiliated or endorsed by Pixile Studios. Super Animal Royale is a trademark of Pixile Studios.</p>
+
+            <h3 class="mt-1">License</h3>
+            <p>MIT License</p>
+            <p>Copyright (c) 2024 Trikami</p>
+            Permission is hereby granted, free of charge, to any person obtaining a copy
+            of this software and associated documentation files (the "Software"), to deal
+            in the Software without restriction, including without limitation the rights
+            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+            copies of the Software, and to permit persons to whom the Software is
+            furnished to do so, subject to the following conditions:</p>
+            <p>The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.</p>
+            <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                SOFTWARE.</p>
+        </div>
+    </div>
+</div>
+
+
+<div id="templates" class="d-none">
+    <!-- Templates -->
+
+    <div class="col-sm-4 col-md-3 col-lg-2" id="tmpl-points-top">
+        <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text">#X</span>
+            <input type="number" step=".1" class="form-control" placeholder="Points for #X" min="0">
+        </div>
+    </div>
+
+    <div class="col text-center" id="tmpl-button-bar">
+        <div class="btn-group d-flex m-1 justify-content-center rs-buttons" role="group" id="round-select">
+        </div>
+    </div>
+
+    <div id="tmpl-round-input" class="row row-cols-1 row-cols-md-2 mt-2">
+        <div class="col">
+            <label for="roundX-getplayers">Output of <code>/getplayers</code> for Round <span class="round-nr">X</span>:</label>
+            <textarea class="form-control" rows="20" id="roundX-getplayers" data-type="getplayers"></textarea>
+        </div>
+        <div class="col">
+            <label for="roundX-score">Output of <code>/score</code> for Round <span class="round-nr">X</span>:</label>
+            <textarea class="form-control" rows="20" id="roundX-score" data-type="score"></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="confirm-delete-max-rounds" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                This will delete all data associated with the removed rounds irreversibly. Are you sure you want to continue?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="onApplyMaxRounds(true)">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm-delete-max-placements" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                This will delete all data associated with the removed top placements irreversibly. Are you sure you want to continue?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="onApplyMaxPlacements(true)">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
